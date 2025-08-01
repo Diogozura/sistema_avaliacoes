@@ -1,0 +1,42 @@
+[
+    {
+        "promocao": "Compre 150 MEGA",
+        "preco": "R$109,90\/Mês",
+        "destaque": false,
+        "beneficios": [
+            "Instalação gratuita",
+            "Mensalidade para 30 dias",
+            "Plano fibra óptica",
+            "Roteador incluso",
+            "Suporte todos os dias",
+            "Sem fidelidade"
+        ]
+    },
+    {
+        "promocao": "Compre 250 MEGA",
+        "preco": "R$129,90\/Mês",
+        "destaque": false,
+        "beneficios": [
+            "Instalação gratuita",
+            "Mensalidade para 30 dias",
+            "Plano fibra óptica",
+            "Roteador incluso",
+            "Suporte todos os dias",
+            "Sem fidelidade"
+        ]
+    },
+    {
+        "promocao": "Compre 350 MEGA + REPETIDOR MESH 5G",
+        "preco": "R$159,90\/Mês",
+        "destaque": false,
+        "beneficios": [
+            "Instalação gratuita",
+            "Mensalidade para 30 dias",
+            "Plano fibra óptica",
+            "Roteador incluso",
+            "Repetidor 5G MESH incluso",
+            "Suporte todos os dias",
+            "Sem fidelidade"
+        ]
+    }
+]

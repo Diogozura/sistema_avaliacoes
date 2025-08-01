@@ -34,6 +34,9 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
+            <a class="nav-link" href="gerador_utm.php">gerador_utm</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="relatorio.php">Relatório</a>
           </li>
           <li class="nav-item">

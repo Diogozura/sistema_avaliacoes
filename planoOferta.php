@@ -78,6 +78,7 @@ $ofertas = file_exists($arquivoOfertas) ? file_get_contents($arquivoOfertas) : '
   </style>
 </head>
 <body>
+  <?php include('header.php'); ?>
   <h1>CMS: Editar Planos e Ofertas</h1>
 
   <?php if (isset($mensagem)) echo "<div class='mensagem'>$mensagem</div>"; ?>
