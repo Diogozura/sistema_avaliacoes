@@ -1,3 +1,10 @@
+<?php
+include('auth.php');
+include('conexao.php');
+date_default_timezone_set('America/Sao_Paulo');
+$periodo = $_GET['periodo'] ?? 'semana';
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 

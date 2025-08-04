@@ -1,5 +1,8 @@
 <?php
-require_once 'conexao.php';
+include('auth.php');
+include('conexao.php');
+date_default_timezone_set('America/Sao_Paulo');
+$periodo = $_GET['periodo'] ?? 'semana';
 
 // CONSULTA CEPS NEGADOS
 $filtro = $_GET['cep'] ?? '';
@@ -48,43 +51,64 @@ if (isset($_GET['excluir'])) {
 }
 
 // INSERÇÃO
+
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $_POST["acao"] === "salvar") {
     $cep = preg_replace('/\D/', '', $_POST["cep"]);
+    $bairro = $_POST["bairro"] ?? '';
+    $tipo = $_POST["tipo"] ?? '';
+    $empresa = $_POST["empresa"] ?? '';
 
-    // Verifica se já existe
-    $check = $conn->prepare("SELECT id FROM ceps_autorizados WHERE cep = ?");
-    $check->bind_param("s", $cep);
-    $check->execute();
-    $check->store_result();
-
-    if ($check->num_rows > 0) {
-        $mensagem = "❌ CEP já cadastrado!";
+    // Validação extra (opcional)
+    $empresasValidas = ['Graja Fibra', 'Digital Fibra', 'Netsul', 'Elinkplay'];
+    if (!in_array($empresa, $empresasValidas)) {
+        $mensagem = "❌ Empresa inválida.";
+    } elseif (!in_array($tipo, ['total', 'parcial'])) {
+        $mensagem = "❌ Tipo inválido.";
     } else {
-        // Busca via BrasilAPI
-        $res = @file_get_contents("https://brasilapi.com.br/api/cep/v2/$cep");
-        if ($res !== false) {
-            $dados = json_decode($res, true);
-            $cidade = $dados['city'] ?? '';
-            $estado = $dados['state'] ?? '';
+        // Verifica se já existe
+        $check = $conn->prepare("SELECT id FROM `ceps_autorizados` WHERE cep = ?");
+        $check->bind_param("s", $cep);
+        $check->execute();
+        $check->store_result();
 
-            if ($cidade && $estado) {
-                $stmt = $conn->prepare("INSERT INTO ceps_autorizados (cep, cidade, estado) VALUES (?, ?, ?)");
-                $stmt->bind_param("sss", $cep, $cidade, $estado);
-                if ($stmt->execute()) {
-                    $mensagem = "✅ CEP cadastrado com sucesso!";
-                } else {
-                    $mensagem = "❌ Erro ao salvar.";
-                }
-                $stmt->close();
-            } else {
-                $mensagem = "❌ Dados incompletos da BrasilAPI.";
-            }
+        if ($check->num_rows > 0) {
+            $mensagem = "❌ CEP já cadastrado!";
         } else {
-            $mensagem = "❌ Erro ao consultar BrasilAPI.";
+            // Busca via BrasilAPI
+            $res = @file_get_contents("https://brasilapi.com.br/api/cep/v2/$cep");
+            if ($res !== false) {
+                $dados = json_decode($res, true);
+                $cidade = $dados['city'] ?? '';
+                $estado = $dados['state'] ?? '';
+                if ($cidade && $estado) {
+
+                   $query = "INSERT INTO ceps_autorizados (cep, bairro, tipo, empresa, cidade, estado) VALUES (?, ?, ?, ?, ?, ?)";
+
+                    $stmt = $conn->prepare($query);
+
+                    // DEBUG: Mostrar erro caso a query falhe
+                    if (!$stmt) {
+                        die("❌ Erro ao preparar a query:<br><strong>{$conn->error}</strong><br>Query: $query");
+                    }
+
+                    $stmt->bind_param("ssssss", $cep, $bairro, $tipo, $empresa, $cidade, $estado);
+                    if ($stmt->execute()) {
+                        $mensagem = "✅ CEP cadastrado com sucesso!";
+                    } else {
+                        $mensagem = "❌ Erro ao salvar no banco.";
+                    }
+                    $stmt->close();
+                } else {
+                    $mensagem = "❌ Dados incompletos da BrasilAPI.";
+                }
+            } else {
+                $mensagem = "❌ Erro ao consultar BrasilAPI.";
+            }
         }
+        $check->close();
     }
-    $check->close();
 }
+
 
 // CONSULTA TODOS OS CEPS
 $ceps = $conn->query("SELECT * FROM ceps_autorizados ORDER BY criado_em DESC");
@@ -227,24 +251,46 @@ $ceps = $conn->query("SELECT * FROM ceps_autorizados ORDER BY criado_em DESC");
         <!-- Cadastrar novo CEP -->
         <div class="cep-box">
             <h3>Cadastrar novo CEP</h3>
+
             <?php if ($mensagem): ?>
                 <div class="mensagem"><?= $mensagem ?></div>
             <?php endif; ?>
 
-            <form method="POST" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                <input type="text" name="cep" placeholder="Digite o CEP (ex: 01001000)" required
-                    style="flex: 1; padding: 8px;" />
+            <form method="POST" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;"
+                onsubmit="return validarFormulario()">
+                <input type="text" name="cep" id="cep" placeholder="CEP (ex: 01001000)" required
+                    style="flex: 1 1 200px; padding: 8px;" />
+                <input type="text" name="bairro" id="bairro" placeholder="Bairro" required
+                    style="flex: 1 1 200px; padding: 8px;" />
+                <input type="text" name="cidade" id="cidade" placeholder="Cidade" required
+                    style="flex: 1 1 200px; padding: 8px;" />
+                <input type="text" name="estado" id="estado" placeholder="Estado" required
+                    style="flex: 1 1 200px; padding: 8px;" />
+
+                <select name="tipo" required style="flex: 1 1 200px; padding: 8px;">
+                    <option value="">Total ou Parcial?</option>
+                    <option value="total">Total</option>
+                    <option value="parcial">Parcial</option>
+                </select>
+                <select name="empresa" required style="flex: 1 1 200px; padding: 8px;">
+                    <option value="">Selecione a empresa</option>
+                    <option value="Graja Fibra">Graja Fibra</option>
+                    <option value="Digital Fibra">Digital Fibra</option>
+                    <option value="Netsul">Netsul</option>
+                    <option value="Elinkplay">Elinkplay</option>
+                </select>
                 <input type="hidden" name="acao" value="salvar" />
                 <button type="submit" style="padding: 8px 16px;">Salvar</button>
             </form>
 
-            <!-- tabela ceps autorizados -->
+
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background-color: #f1f1f1;">
                         <th>CEP</th>
-                        <th>Cidade</th>
-                        <th>Estado</th>
+                        <th>Bairro</th>
+                        <th>Total/Parcial</th>
+                        <th>Empresa</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -252,15 +298,19 @@ $ceps = $conn->query("SELECT * FROM ceps_autorizados ORDER BY criado_em DESC");
                     <?php while ($row = $ceps->fetch_assoc()): ?>
                         <tr>
                             <td><?= $row['cep'] ?></td>
-                            <td><?= $row['cidade'] ?></td>
-                            <td><?= $row['estado'] ?></td>
-                            <td><a href="?excluir=<?= $row['id'] ?>" onclick="return confirm('Excluir este CEP?')">🗑️
-                                    Excluir</a></td>
+                            <td><?= $row['bairro'] ?></td>
+                            <td><?= ucfirst($row['tipo']) ?></td>
+                            <td><?= $row['empresa'] ?></td>
+                            <td>
+                                <a href="?excluir=<?= $row['id'] ?>" onclick="return confirm('Excluir este CEP?')">🗑️
+                                    Excluir</a>
+                            </td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
         </div>
+
 
         <!-- CEPs Negados -->
         <div class="cep-box">
@@ -307,6 +357,28 @@ $ceps = $conn->query("SELECT * FROM ceps_autorizados ORDER BY criado_em DESC");
     </div>
 
 </body>
+<script>
+    document.getElementById('cep').addEventListener('blur', async function () {
+        const cep = this.value.replace(/\D/g, '');
+        if (cep.length !== 8) return;
+
+        try {
+            const res = await fetch(`https://brasilapi.com.br/api/cep/v2/${cep}`);
+            if (!res.ok) throw new Error('Erro ao buscar CEP');
+
+            const data = await res.json();
+            console.log(data);
+
+            // Preencher os campos
+            document.getElementById('bairro').value = data.neighborhood || '';
+            document.getElementById('cidade').value = data.city || '';
+            document.getElementById('estado').value = data.state || '';
+        } catch (err) {
+            alert('Não foi possível buscar o endereço para o CEP informado.');
+            console.error(err);
+        }
+    });
+</script>
 
 
 </html>

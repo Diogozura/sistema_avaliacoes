@@ -1,5 +1,8 @@
 <?php
-require_once 'conexao.php';
+include('auth.php');
+include('conexao.php');
+date_default_timezone_set('America/Sao_Paulo');
+$periodo = $_GET['periodo'] ?? 'semana';
 
 // Consulta todos os interessados
 $resultado = $conn->query("SELECT nome, telefone, criado_em FROM usuarios_interessados ORDER BY criado_em DESC");

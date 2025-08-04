@@ -1,10 +1,25 @@
 <?php
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+$origens_permitidas = [
+    'https://granja-fibra.vercel.app',
+    'https://www.grajafibra.com.br',
+    'http://localhost:3000'
+];
+
+if (in_array($origin, $origens_permitidas)) {
+    header("Access-Control-Allow-Origin: $origin");
+}
 header('Content-Type: application/json');
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json; charset=utf-8");
 
 // Conexão
-require_once 'conexao.php'; // já conecta com $conn
+
+include('conexao.php');
+date_default_timezone_set('America/Sao_Paulo');
+$periodo = $_GET['periodo'] ?? 'semana';
 
 // Recebe JSON
 $dados = json_decode(file_get_contents("php://input"), true);

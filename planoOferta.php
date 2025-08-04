@@ -1,5 +1,8 @@
 <?php
-require_once 'conexao.php';
+include('auth.php');
+include('conexao.php');
+date_default_timezone_set('America/Sao_Paulo');
+$periodo = $_GET['periodo'] ?? 'semana';
 
 // Caminhos dos arquivos
 $arquivoPlanos = 'planos.json';
