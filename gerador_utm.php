@@ -3,6 +3,25 @@ include('auth.php');
 include('conexao.php');
 date_default_timezone_set('America/Sao_Paulo');
 $periodo = $_GET['periodo'] ?? 'semana';
+
+$configFile = 'config.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $novoLink = $_POST['whatsapp_url'] ?? '';
+    $novoLink = trim($novoLink);
+    
+    if ($novoLink !== '') {
+        $config = "<?php\nreturn [\n  'whatsapp_url' => '" . addslashes($novoLink) . "'\n];";
+        file_put_contents($configFile, $config);
+        $mensagem = "Link atualizado com sucesso!";
+    } else {
+        $mensagem = "Por favor, insira um link válido.";
+    }
+}
+
+// Carrega o valor atual
+$config = include($configFile);
+$whatsapp_url = $config['whatsapp_url'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -57,6 +76,14 @@ $periodo = $_GET['periodo'] ?? 'semana';
     <h3>Link Gerado:</h3>
     <textarea id="resultado" rows="3" readonly></textarea>
 
+    <h2>Editar link de envio Assinatura</h2>
+    <form method="POST">
+        <label for="whatsapp_url">Link com placeholder <code>{mensagem}</code>:</label><br>
+        <input type="text" name="whatsapp_url" value="<?= htmlspecialchars($whatsapp_url) ?>"
+            style="width: 100%; max-width: 600px;" required />
+        <br><br>
+        <button type="submit">Salvar</button>
+    </form>
     <script>
         function gerarLink(e) {
             e.preventDefault();

@@ -1,48 +1,51 @@
-[
-    {
-        "promocao": "Compre 250 MEGA e receba 500 MEGA ",
-        "beneficios": [
-            "Instalação gratuita **",
-            "Mensalidade para 30 dias",
-            "Plano fibra óptica",
-            "Roteador 5G incluso",
-            "Suporte todos os dias",
-            "Graja Vantagens",
-            "Graja Livros",
-            "Graja Revistas",
-            "Sem fidelidade"
-        ],
-        "preco": "R$ 99,90\/Mês ***"
-    },
-    {
-        "promocao": "Compre 350 MEGA e receba 700 MEGA ",
-        "beneficios": [
-            "Instalação gratuita **",
-            "Mensalidade para 30 dias",
-            "Plano fibra óptica",
-            "Roteador 5G incluso",
-            "Suporte todos os dias",
-            "Graja Vantagens",
-            "Graja Livros",
-            "Graja Revistas",
-            "Sem fidelidade"
-        ],
-        "preco": "R$ 99,90\/Mês ***"
-    },
-    {
-        "promocao": "Compre 350 MEGA e receba 750 MEGA + REPETIDOR 5G MESh *",
-        "beneficios": [
-            "Instalação gratuita **",
-            "Mensalidade para 30 dias",
-            "Plano fibra óptica",
-            "Roteador 5G incluso",
-            "Repetidor MESH 5G incluso",
-            "Suporte todos os dias",
-            "Graja Vantagens",
-            "Graja Livros",
-            "Graja Revistas",
-            "Sem fidelidade"
-        ],
-        "preco": "R$ 99,90\/Mês ***"
-    }
-]
+{
+    "dataOfertaValida": "30\/06\/2025",
+    "promocoes": [
+        {
+            "promocao": "Compre 250 MEGA e receba 500 MEGA ",
+            "beneficios": [
+                "Instalação gratuita **",
+                "Mensalidade para 30 dias",
+                "Plano fibra óptica",
+                "Roteador 5G incluso",
+                "Suporte todos os dias",
+                "Graja Vantagens",
+                "Graja Livros",
+                "Graja Revistas",
+                "Sem fidelidade"
+            ],
+            "preco": "R$ 99,90\/Mês ***"
+        },
+        {
+            "promocao": "Compre 350 MEGA e receba 700 MEGA ",
+            "beneficios": [
+                "Instalação gratuita **",
+                "Mensalidade para 30 dias",
+                "Plano fibra óptica",
+                "Roteador 5G incluso",
+                "Suporte todos os dias",
+                "Graja Vantagens",
+                "Graja Livros",
+                "Graja Revistas",
+                "Sem fidelidade"
+            ],
+            "preco": "R$ 99,90\/Mês ***"
+        },
+        {
+            "promocao": "Compre 350 MEGA e receba 750 MEGA + REPETIDOR 5G MESh *",
+            "beneficios": [
+                "Instalação gratuita **",
+                "Mensalidade para 30 dias",
+                "Plano fibra óptica",
+                "Roteador 5G incluso",
+                "Repetidor MESH 5G incluso",
+                "Suporte todos os dias",
+                "Graja Vantagens",
+                "Graja Livros",
+                "Graja Revistas",
+                "Sem fidelidade"
+            ],
+            "preco": "R$ 99,90\/Mês ***"
+        }
+    ]
+}

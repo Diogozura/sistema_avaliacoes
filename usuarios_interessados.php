@@ -5,7 +5,7 @@ date_default_timezone_set('America/Sao_Paulo');
 $periodo = $_GET['periodo'] ?? 'semana';
 
 // Consulta todos os interessados
-$resultado = $conn->query("SELECT nome, telefone, criado_em FROM usuarios_interessados ORDER BY criado_em DESC");
+$resultado = $conn->query("SELECT nome, telefone, criado_em, utm_source FROM usuarios_interessados ORDER BY criado_em DESC");
 ?>
 
 <!DOCTYPE html>
@@ -68,6 +68,7 @@ $resultado = $conn->query("SELECT nome, telefone, criado_em FROM usuarios_intere
         <th>Nome</th>
         <th>Telefone</th>
         <th>Data</th>
+        <th>utm source</th>
       </tr>
     </thead>
     <tbody>
@@ -76,6 +77,7 @@ $resultado = $conn->query("SELECT nome, telefone, criado_em FROM usuarios_intere
           <tr>
             <td><?= htmlspecialchars($row['nome']) ?></td>
             <td><?= htmlspecialchars($row['telefone']) ?></td>
+            <td><?= htmlspecialchars($row['utm_source']) ?></td>
             <td><?= date('d/m/Y H:i', strtotime($row['criado_em'])) ?></td>
           </tr>
         <?php endwhile; ?>
