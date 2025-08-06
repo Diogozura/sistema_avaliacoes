@@ -55,6 +55,7 @@ if (isset($_GET['excluir'])) {
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $_POST["acao"] === "salvar") {
     $cep = preg_replace('/\D/', '', $_POST["cep"]);
     $bairro = $_POST["bairro"] ?? '';
+    $rua = $_POST["rua"] ?? '';
     $tipo = $_POST["tipo"] ?? '';
     $empresa = $_POST["empresa"] ?? '';
 
@@ -80,9 +81,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $_POST["acao"] === "salvar") {
                 $dados = json_decode($res, true);
                 $cidade = $dados['city'] ?? '';
                 $estado = $dados['state'] ?? '';
-                if ($cidade && $estado) {
+                $rua = $dados['street'] ?? '';
+                if ($cidade && $estado && $rua) {
 
-                   $query = "INSERT INTO ceps_autorizados (cep, bairro, tipo, empresa, cidade, estado) VALUES (?, ?, ?, ?, ?, ?)";
+                   $query = "INSERT INTO ceps_autorizados (cep, bairro, tipo, empresa, cidade, rua, estado) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
                     $stmt = $conn->prepare($query);
 
@@ -91,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $_POST["acao"] === "salvar") {
                         die("❌ Erro ao preparar a query:<br><strong>{$conn->error}</strong><br>Query: $query");
                     }
 
-                    $stmt->bind_param("ssssss", $cep, $bairro, $tipo, $empresa, $cidade, $estado);
+                    $stmt->bind_param("sssssss", $cep, $bairro, $tipo, $empresa, $cidade, $rua, $estado);
                     if ($stmt->execute()) {
                         $mensagem = "✅ CEP cadastrado com sucesso!";
                     } else {
@@ -264,6 +266,8 @@ $ceps = $conn->query("SELECT * FROM ceps_autorizados ORDER BY criado_em DESC");
                     style="flex: 1 1 200px; padding: 8px;" />
                 <input type="text" name="cidade" id="cidade" placeholder="Cidade" required
                     style="flex: 1 1 200px; padding: 8px;" />
+                <input type="text" name="rua" id="rua" placeholder="Rua" required
+                    style="flex: 1 1 200px; padding: 8px;" />
                 <input type="text" name="estado" id="estado" placeholder="Estado" required
                     style="flex: 1 1 200px; padding: 8px;" />
 
@@ -289,6 +293,7 @@ $ceps = $conn->query("SELECT * FROM ceps_autorizados ORDER BY criado_em DESC");
                     <tr style="background-color: #f1f1f1;">
                         <th>CEP</th>
                         <th>Bairro</th>
+                        <th>Rua</th>
                         <th>Total/Parcial</th>
                         <th>Empresa</th>
                         <th>Ações</th>
@@ -299,6 +304,7 @@ $ceps = $conn->query("SELECT * FROM ceps_autorizados ORDER BY criado_em DESC");
                         <tr>
                             <td><?= $row['cep'] ?></td>
                             <td><?= $row['bairro'] ?></td>
+                            <td><?= $row['rua'] ?></td>
                             <td><?= ucfirst($row['tipo']) ?></td>
                             <td><?= $row['empresa'] ?></td>
                             <td>
@@ -373,6 +379,7 @@ $ceps = $conn->query("SELECT * FROM ceps_autorizados ORDER BY criado_em DESC");
             document.getElementById('bairro').value = data.neighborhood || '';
             document.getElementById('cidade').value = data.city || '';
             document.getElementById('estado').value = data.state || '';
+            document.getElementById('rua').value = data.street || '';
         } catch (err) {
             alert('Não foi possível buscar o endereço para o CEP informado.');
             console.error(err);
